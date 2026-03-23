@@ -25,7 +25,11 @@ public class PersonRepository {
         return personList;
     }
 
-    public void addPerson(Person person) {
+    public void save(Person person) {
         personList.add(person);
+    }
+
+    public void removeById(int id){
+        personList.removeIf(person -> person.getId() == id);
     }
 }
