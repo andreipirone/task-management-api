@@ -2,31 +2,31 @@ package com.andrei.demo.controller;
 
 import com.andrei.demo.model.Person;
 import com.andrei.demo.repository.PersonRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/")
 public class PersonController {
-    @Autowired
-    PersonRepository personRepository;
 
-    private List<Person> personList = new ArrayList<>();
+//    @Autowired (OLD WAY!!!)
+    private final PersonRepository personRepository;
+
+    public PersonController(PersonRepository personRepository){
+        this.personRepository = personRepository;
+    }
 
     @GetMapping("/home")
     public String home() {
-        return "<h1>I hate macroeconomics, peag, sgbd, sdd, i hate school so fucking much</h1>";
+        return "<h1>Hello!!</h1>";
     }
 
     @GetMapping("/persons")
     public ResponseEntity<List<Person>> getAll(){
-        return ResponseEntity.ok(personRepository.getAllPersons());
+        return ResponseEntity.ok(personRepository.findAll());
     }
 
     @PostMapping("/persons")
@@ -40,23 +40,26 @@ public class PersonController {
     }
 
     @PutMapping("/persons/{id}")
-    public ResponseEntity<Person> updatePerson(@PathVariable int id, @RequestBody Person updatedPerson){
-        for(Person person : personRepository.getAllPersons()){
-            if(person.getId() == id){
-                person.setAge(updatedPerson.getAge());
-                URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                        .path("/persons/{id}")
-                        .buildAndExpand(person.getId())
-                        .toUri();
-                return ResponseEntity.created(location).build();
-            }
+    public ResponseEntity<Void> updatePerson(@PathVariable Long id, @RequestBody Person updatedPerson){
+        Person person = personRepository.findById(id).orElse(null);
+
+        if(person != null) {
+            person.setName(updatedPerson.getName());
+            person.setAge(updatedPerson.getAge());
+            personRepository.save(person);
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/persons/{id}")
+                    .buildAndExpand(person.getId())
+                    .toUri();
+            return ResponseEntity.created(location).build();
         }
+
         return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/persons/{id}")
-    public ResponseEntity<Person> deletePerson(@PathVariable int id){
-        personRepository.removeById(id);
+    public ResponseEntity<Person> deletePerson(@PathVariable Long id){
+        personRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

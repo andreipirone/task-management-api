@@ -1,15 +1,16 @@
 package com.andrei.demo.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "persons")
 public class Person {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private int age;
-
-    public Person(int id, String name, int age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-    }
 
     public int getId() {
         return id;
