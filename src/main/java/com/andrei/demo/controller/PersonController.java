@@ -39,6 +39,17 @@ public class PersonController {
         return ResponseEntity.created(location).build();
     }
 
+    @GetMapping("/persons/{id}")
+    public ResponseEntity<Person> getPersonById(@PathVariable Long id){
+        Person person = personRepository.findById(id).orElse(null);
+
+        if(person != null){
+            return ResponseEntity.ok(person);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
     @PutMapping("/persons/{id}")
     public ResponseEntity<Void> updatePerson(@PathVariable Long id, @RequestBody Person updatedPerson){
         Person person = personRepository.findById(id).orElse(null);
