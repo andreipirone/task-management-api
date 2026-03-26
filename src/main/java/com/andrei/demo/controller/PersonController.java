@@ -2,6 +2,7 @@ package com.andrei.demo.controller;
 
 import com.andrei.demo.model.Person;
 import com.andrei.demo.repository.PersonRepository;
+import com.andrei.demo.service.PersonService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -13,10 +14,10 @@ import java.util.List;
 public class PersonController {
 
 //    @Autowired (OLD WAY!!!)
-    private final PersonRepository personRepository;
+    private final PersonService personService;
 
-    public PersonController(PersonRepository personRepository){
-        this.personRepository = personRepository;
+    public PersonController(PersonService personService){
+        this.personService = personService;
     }
 
     @GetMapping("/home")
@@ -26,12 +27,12 @@ public class PersonController {
 
     @GetMapping("/persons")
     public ResponseEntity<List<Person>> getAll(){
-        return ResponseEntity.ok(personRepository.findAll());
+        return ResponseEntity.ok(personService.findAll());
     }
 
     @PostMapping("/persons")
     public ResponseEntity<Void> addPerson(@RequestBody Person person){
-        personRepository.save(person);
+        personService.save(person);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/persons/{id}")
                 .buildAndExpand(person.getId())
@@ -41,7 +42,7 @@ public class PersonController {
 
     @GetMapping("/persons/{id}")
     public ResponseEntity<Person> getPersonById(@PathVariable Long id){
-        Person person = personRepository.findById(id).orElse(null);
+        Person person = personService.findPersonById(id);
 
         if(person != null){
             return ResponseEntity.ok(person);
@@ -52,12 +53,12 @@ public class PersonController {
 
     @PutMapping("/persons/{id}")
     public ResponseEntity<Void> updatePerson(@PathVariable Long id, @RequestBody Person updatedPerson){
-        Person person = personRepository.findById(id).orElse(null);
+        Person person = personService.findPersonById(id);
 
         if(person != null) {
             person.setName(updatedPerson.getName());
             person.setAge(updatedPerson.getAge());
-            personRepository.save(person);
+            personService.save(person);
             URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                     .path("/persons/{id}")
                     .buildAndExpand(person.getId())
@@ -70,7 +71,7 @@ public class PersonController {
 
     @DeleteMapping("/persons/{id}")
     public ResponseEntity<Person> deletePerson(@PathVariable Long id){
-        personRepository.deleteById(id);
+        personService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
