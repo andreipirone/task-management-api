@@ -20,6 +20,11 @@ public class PersonController {
         this.personService = personService;
     }
 
+    @GetMapping
+    public String root(){
+        return "<h1>Hi!</h1>";
+    }
+
     @GetMapping("/home")
     public String home() {
         return "<h1>Hello!!</h1>";
