@@ -1,4 +1,20 @@
-drop table persons;
+drop table if exists persons;
+DROP TABLE IF EXISTS authorities;
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+    username VARCHAR(255) NOT NULL PRIMARY KEY,
+    password VARCHAR(255) NOT NULL,
+    enabled BOOLEAN NOT NULL
+);
+
+CREATE TABLE authorities (
+    username VARCHAR(255) NOT NULL,
+    authority VARCHAR(255) NOT NULL,
+    CONSTRAINT fk_authorities_users FOREIGN KEY (username) REFERENCES users (username)
+);
+
+CREATE UNIQUE INDEX ix_auth_username ON authorities (username, authority);
 
 create table persons (
     id integer generated always as identity primary key,
@@ -14,3 +30,4 @@ insert into persons (name, age) values ('Cristiano Ronaldo', 40);
 insert into persons (name, age) values ('Spongebob Squarepants', 40);
 
 select * from persons;
+select * from authorities;
