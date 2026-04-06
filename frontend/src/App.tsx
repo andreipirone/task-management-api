@@ -41,15 +41,39 @@ function App() {
         }
     };
 
+    const fetchAdmin = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch('http://localhost:8080/api/admin', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (response.status === 403) {
+                throw new Error("403 Forbidden");
+            }
+            const text = await response.text();
+            setData(text);
+            console.log(text);
+            setError(null);
+        } catch (err: any) {
+            setError('Failed to fetch admin endpoint. Are you authorized? Error' + err.message);
+            setData(null);
+        }
+    };
+
     const signup = () =>
     loginWithRedirect({ authorizationParams: { screen_hint: "signup" } });
 
     return (
         <>
             <h1>Home</h1>
+            <h2>{isAuthenticated ? `Welcome, ${user?.name}!` : "You are not logged in."}</h2>
             <button onClick={fetchPublic}>Fetch Public Endpoint</button>
             <br></br>
             <button onClick={fetchPrivate}>Fetch Private Endpoint</button>
+            <br></br>
+            <button onClick={fetchAdmin}>Fetch Admin Endpoint</button>
             <br></br>
             <p>{data?.message}</p>
             {error && <p style={{ color: 'red' }}>{error}</p>}
