@@ -10,6 +10,7 @@ console.log("Audience Check:", import.meta.env.VITE_AUTH0_AUDIENCE);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet"></link>
       <Auth0Provider
           domain={import.meta.env.VITE_AUTH0_DOMAIN}
           clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
