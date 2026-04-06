@@ -1,4 +1,13 @@
 package com.andrei.demo.service;
 
-public class TaskService {
+import com.andrei.demo.model.Person;
+import com.andrei.demo.model.Task;
+
+import java.util.List;
+
+public interface TaskService {
+    public Task findTaskById(Long id);
+    public void save(Task task);
+    public void deleteTaskById(Long id);
+    public List<Task> findAll();
 }
