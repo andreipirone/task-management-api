@@ -24,6 +24,8 @@ export function NewTaskDialog({ onAddTask }: { onAddTask: (title: string, descri
         setNewTaskTitle('');
         setNewTaskDesc('');
         setIsDialogOpen(false);
+
+        
     };
 
     return (

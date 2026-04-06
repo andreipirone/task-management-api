@@ -2,8 +2,7 @@ package com.andrei.demo.controller;
 
 import com.andrei.demo.model.Person;
 import com.andrei.demo.model.Task;
-import com.andrei.demo.repository.TaskRepository;
-import com.andrei.demo.service.TaskServiceImpl;
+import com.andrei.demo.service.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -14,9 +13,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
-    private final TaskServiceImpl taskService;
+    private final TaskService taskService;
 
-    public TaskController(TaskServiceImpl taskService) {
+    public TaskController(TaskService taskService) {
         this.taskService = taskService;
     }
 

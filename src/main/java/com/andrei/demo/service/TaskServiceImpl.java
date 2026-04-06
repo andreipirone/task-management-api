@@ -2,10 +2,12 @@ package com.andrei.demo.service;
 
 import com.andrei.demo.model.Task;
 import com.andrei.demo.repository.TaskRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
 
