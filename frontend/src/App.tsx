@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import './App.css';
 import Navbar from './Navbar';
 import Tasks from './Tasks';
 import Welcome from './Welcome';
@@ -20,24 +19,22 @@ function App() {
     return (
         <Router>
             <Routes>
-                <Route 
-                    path="/" 
-                    element={isAuthenticated ? <Navigate to="/tasks" /> : <Welcome />} 
+                <Route
+                    path="/"
+                    element={isAuthenticated ? <Navigate to="/tasks" /> : <Welcome />}
                 />
-                <Route 
-                    path="/tasks" 
+                <Route
+                    path="/tasks"
                     element={
                         isAuthenticated ? (
-                            <>  
+                            <>
                                 <Navbar />
-                                <div className="p-4">
-                                    <Tasks />
-                                </div>
+                                <Tasks />
                             </>
                         ) : (
                             <Navigate to="/" />
                         )
-                    } 
+                    }
                 />
             </Routes>
         </Router>
