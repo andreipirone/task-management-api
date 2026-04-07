@@ -1,6 +1,6 @@
 # Task Management API
 
-A full-stack project management and task tracking application built with Spring Boot (backend) and React (frontend), secured with JWT and Oauth2 authentication.
+A full-stack project management and task tracking application built with Spring Boot and React, secured with JWT and Oauth2 authentication.
 
 ## Features
 
