@@ -59,8 +59,27 @@ public class ProjectController {
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/{id}/status")
+    @PutMapping("/{id}")
     public ResponseEntity<Project> updateProject(@PathVariable Long id, @RequestBody Project updatedProject, Authentication authentication) {
+        if(scopeValidator.hasRequiredScopes(authentication, "admin", "write:projects")){
+            Project project = projectService.findProjectById(id);
+            if(project != null){
+                project.setName(updatedProject.getName());
+                project.setDescription(updatedProject.getDescription());
+                if (updatedProject.getStatus() != null) {
+                    project.setStatus(updatedProject.getStatus());
+                }
+                projectService.save(project);
+                return ResponseEntity.ok(project);
+            }
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.status(403).build();
+        }
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Project> updateProjectStatus(@PathVariable Long id, @RequestBody Project updatedProject, Authentication authentication) {
         Auth0AuthenticationToken auth0Token = (Auth0AuthenticationToken) authentication;
 
         Project project = projectService.findProjectById(id);

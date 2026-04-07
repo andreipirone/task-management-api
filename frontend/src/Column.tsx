@@ -1,7 +1,7 @@
 import type { Task } from './types';
 import { TaskCard } from './TaskCard';
 
-export const Column = ({ title, tasks, dotColor, onStatusChange }: { title: string, tasks: Task[], dotColor: string, onStatusChange: (id: string, status: Task['status']) => void }) => (
+export const Column = ({ title, tasks, dotColor, onStatusChange, onEdit, onDelete }: { title: string, tasks: Task[], dotColor: string, onStatusChange: (id: string, status: Task['status']) => void, onEdit: (id: string) => void, onDelete: (id: string) => void }) => (
     <div className="flex-1 bg-[#16171c]/80 backdrop-blur-sm border border-[#2b2d36]/50 rounded-xl p-5 min-h-[500px]">
         <div className="flex items-center gap-2 mb-6">
             <div className={`w-2.5 h-2.5 rounded-full ${dotColor}`}></div>
@@ -11,7 +11,7 @@ export const Column = ({ title, tasks, dotColor, onStatusChange }: { title: stri
             </span>
         </div>
         <div className="flex flex-col">
-            {tasks.map(task => <TaskCard key={task.id} task={task} onStatusChange={onStatusChange} />)}
+            {tasks.map(task => <TaskCard key={task.id} task={task} onStatusChange={onStatusChange} onEdit={onEdit} onDelete={onDelete} />)}
             {tasks.length === 0 && (
                 <div className="text-center p-6 border-2 border-dashed border-[#2b2d36] rounded-xl text-gray-500 text-sm">
                     No tasks here

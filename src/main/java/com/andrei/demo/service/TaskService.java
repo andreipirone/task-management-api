@@ -11,4 +11,5 @@ public interface TaskService {
     public void deleteTaskById(Long id);
     public String getTaskUserIdById(Long id);
     public List<Task> findAll();
+    public List<Task> findTasksByProjectId(Long projectId);
 }

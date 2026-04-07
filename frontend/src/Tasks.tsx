@@ -31,6 +31,14 @@ function Tasks() {
         setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
     };
 
+    const handleEditTask = (taskId: string) => {
+        console.log('Edit task:', taskId);
+    };
+
+    const handleDeleteTask = (taskId: string) => {
+        setTasks(prev => prev.filter(t => t.id !== taskId));
+    };
+
     const openTasks = tasks.filter(t => t.status === 'open');
     const inProgressTasks = tasks.filter(t => t.status === 'in_progress');
     const closedTasks = tasks.filter(t => t.status === 'closed');
@@ -48,9 +56,9 @@ function Tasks() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Column title="Open" tasks={openTasks} dotColor="bg-blue-400" onStatusChange={updateTaskStatus} />
-                <Column title="In Progress" tasks={inProgressTasks} dotColor="bg-amber-400" onStatusChange={updateTaskStatus} />
-                <Column title="Closed" tasks={closedTasks} dotColor="bg-emerald-400" onStatusChange={updateTaskStatus} />
+                <Column title="Open" tasks={openTasks} dotColor="bg-blue-400" onStatusChange={updateTaskStatus} onEdit={handleEditTask} onDelete={handleDeleteTask} />
+                <Column title="In Progress" tasks={inProgressTasks} dotColor="bg-amber-400" onStatusChange={updateTaskStatus} onEdit={handleEditTask} onDelete={handleDeleteTask} />
+                <Column title="Closed" tasks={closedTasks} dotColor="bg-emerald-400" onStatusChange={updateTaskStatus} onEdit={handleEditTask} onDelete={handleDeleteTask} />
             </div>
         </div>
     );

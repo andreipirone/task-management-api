@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,31 +13,70 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-export function NewProjectDialog({ onAddProject }: { onAddProject: (name: string, description: string) => void }) {
+interface NewProjectDialogProps {
+    onAddProject?: (name: string, description: string) => void;
+    onEditProject?: (id: string, name: string, description: string) => void;
+    projectToEdit?: { id: string; name: string; description: string } | null;
+    onEditCancel?: () => void;
+}
+
+export function NewProjectDialog({ onAddProject, onEditProject, projectToEdit, onEditCancel }: NewProjectDialogProps) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [newProjectName, setNewProjectName] = useState('');
     const [newProjectDesc, setNewProjectDesc] = useState('');
 
+    useEffect(() => {
+        if (projectToEdit) {
+            setNewProjectName(projectToEdit.name);
+            setNewProjectDesc(projectToEdit.description);
+            setIsDialogOpen(true);
+        }
+    }, [projectToEdit]);
+
+    const isEditMode = !!projectToEdit;
+
     const handleSave = () => {
         if (!newProjectName.trim()) return;
-        onAddProject(newProjectName, newProjectDesc);
+        
+        if (isEditMode && onEditProject) {
+            onEditProject(projectToEdit.id, newProjectName, newProjectDesc);
+        } else if (onAddProject) {
+            onAddProject(newProjectName, newProjectDesc);
+        }
+        
         setNewProjectName('');
         setNewProjectDesc('');
+        if (onEditCancel) {
+            onEditCancel();
+        }
         setIsDialogOpen(false);
     };
 
+    const handleOpenChange = (open: boolean) => {
+        setIsDialogOpen(open);
+        if (!open) {
+            setNewProjectName('');
+            setNewProjectDesc('');
+            if (onEditCancel) {
+                onEditCancel();
+            }
+        }
+    };
+
     return (
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/20 px-6">
-                    + New Project
-                </Button>
-            </DialogTrigger>
+        <Dialog open={isDialogOpen} onOpenChange={handleOpenChange}>
+            {!isEditMode && (
+                <DialogTrigger asChild>
+                    <Button className="bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/20 px-6">
+                        + New Project
+                    </Button>
+                </DialogTrigger>
+            )}
             <DialogContent className="sm:max-w-[425px] bg-[#16171c] text-white border-[#2b2d36]">
                 <DialogHeader>
-                    <DialogTitle>Add New Project</DialogTitle>
+                    <DialogTitle>{isEditMode ? 'Edit Project' : 'Add New Project'}</DialogTitle>
                     <DialogDescription className="text-gray-400">
-                        Create a new project to track.
+                        {isEditMode ? 'Update the project details.' : 'Create a new project to track.'}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -68,7 +107,7 @@ export function NewProjectDialog({ onAddProject }: { onAddProject: (name: string
                 </div>
                 <DialogFooter>
                     <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={handleSave}>
-                        Save Project
+                        {isEditMode ? 'Update Project' : 'Save Project'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

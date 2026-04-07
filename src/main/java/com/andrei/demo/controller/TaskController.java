@@ -29,6 +29,12 @@ public class TaskController {
         return ResponseEntity.ok(taskService.findAll());
     }
 
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<List<Task>> getTasksByProject(@PathVariable Long projectId) {
+        List<Task> tasks = taskService.findTasksByProjectId(projectId);
+        return ResponseEntity.ok(tasks);
+    }
+
     @PostMapping
     public ResponseEntity<Void> addTask(@RequestBody Task task, Authentication authentication) {
         Auth0AuthenticationToken auth0Token = (Auth0AuthenticationToken) authentication;

@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import {useAuth0} from "@auth0/auth0-react";
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { NewProjectDialog } from './NewProjectDialog';
+import { ProjectCard } from './ProjectCard';
 import type { Project } from './types';
 
 function Projects() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
+    const [projectToEdit, setProjectToEdit] = useState<{ id: string; name: string; description: string } | null>(null);
     const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
     const fetchProjects = async () => {
@@ -63,9 +63,8 @@ function Projects() {
 
             if (response.ok || response.status === 201) {
                 const location = response.headers.get('Location');
-                console.log('Project created at:', location);
                 const id = location ? location.split('/').pop() : Math.random().toString(36).substr(2, 9);
-                
+
                 const createdProject: Project = {
                     id,
                     ...newProject
@@ -88,6 +87,85 @@ function Projects() {
         }
     };
 
+    const handleStatusChange = async (id: string, status: Project['status']) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`http://localhost:8080/projects/${id}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ status }),
+            });
+
+            if (response.ok || response.status === 201) {
+                setProjects(prev =>
+                    prev.map(p => p.id === id ? { ...p, status } : p)
+                );
+            } else {
+                console.error('Failed to update project status:', response.status);
+            }
+        } catch (error) {
+            console.error('Error updating project status:', error);
+        }
+    };
+
+    const handleEdit = (id: string) => {
+        const project = projects.find(p => p.id === id);
+        if (project) {
+            setProjectToEdit({ id: project.id, name: project.name, description: project.description });
+        }
+    };
+
+    const handleEditCancel = () => {
+        setProjectToEdit(null);
+    };
+
+    const handleEditProjectSubmit = async (id: string, name: string, description: string) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`http://localhost:8080/projects/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ name, description }),
+            });
+
+            if (response.ok || response.status === 200) {
+                setProjects(prev =>
+                    prev.map(p => p.id === id ? { ...p, name, description } : p)
+                );
+            } else {
+                console.error('Failed to update project:', response.status);
+            }
+        } catch (error) {
+            console.error('Error updating project:', error);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`http://localhost:8080/projects/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok || response.status === 204) {
+                setProjects(prev => prev.filter(p => p.id !== id));
+            } else {
+                console.error('Failed to delete project:', response.status);
+            }
+        } catch (error) {
+            console.error('Error deleting project:', error);
+        }
+    };
+
     return (
         <div className="px-6 py-8 md:px-12 md:py-10 max-w-[1600px] mx-auto min-h-screen">
             <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -97,7 +175,12 @@ function Projects() {
                     </h1>
                     <p className="text-gray-400 mt-2">Manage overarching projects and monitor their current statuses.</p>
                 </div>
-                <NewProjectDialog onAddProject={handleAddProject} />
+                <NewProjectDialog 
+                    onAddProject={handleAddProject} 
+                    onEditProject={handleEditProjectSubmit}
+                    projectToEdit={projectToEdit}
+                    onEditCancel={handleEditCancel}
+                />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -111,27 +194,14 @@ function Projects() {
                     </div>
                 ) : (
                     projects.map((project) => (
-                    <Card key={project.id} className="bg-[#1f2128] border-[#2b2d36] text-white hover:border-indigo-500/50 transition-colors duration-200 flex flex-col h-full">
-                        <CardHeader className="pb-3">
-                            <div className="flex justify-between items-start">
-                                <CardTitle className="text-xl font-semibold tracking-tight">{project.name}</CardTitle>
-                            </div>
-                            <CardDescription className="text-gray-400 mt-1.5 leading-relaxed">{project.description}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex-grow">
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                                <span className="font-medium text-gray-300">Project ID:</span> <span className="text-gray-400">{project.id}</span>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="pt-4 border-t border-[#2b2d36] flex justify-between items-center mt-auto">
-                            <Badge variant={getStatusVariant(project.status)} className="capitalize px-3 py-1 bg-opacity-20 border-transparent">
-                                {project.status.replace('_', ' ')}
-                            </Badge>
-                            <Button variant="ghost" size="sm" className="text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10">
-                                View Details &rarr;
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                        <ProjectCard
+                            key={project.id}
+                            project={project}
+                            statusVariant={getStatusVariant(project.status)}
+                            onStatusChange={handleStatusChange}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        />
                 )))}
             </div>
         </div>
