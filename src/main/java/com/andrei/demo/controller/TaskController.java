@@ -1,9 +1,12 @@
 package com.andrei.demo.controller;
 
-import com.andrei.demo.model.Person;
+import com.andrei.demo.config.ScopeValidator;
+import com.andrei.demo.model.Project;
 import com.andrei.demo.model.Task;
 import com.andrei.demo.service.TaskService;
+import com.auth0.spring.boot.Auth0AuthenticationToken;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -14,18 +17,22 @@ import java.util.List;
 @RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
+    private final ScopeValidator scopeValidator;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, ScopeValidator scopeValidator) {
         this.taskService = taskService;
+        this.scopeValidator = scopeValidator;
     }
 
     @GetMapping
-    public ResponseEntity<List<Task>> getAll(){
+    public ResponseEntity<List<Task>> getAll(Authentication authentication) {
         return ResponseEntity.ok(taskService.findAll());
     }
 
     @PostMapping
-    public ResponseEntity<Void> addTask(@RequestBody Task task){
+    public ResponseEntity<Void> addTask(@RequestBody Task task, Authentication authentication) {
+        Auth0AuthenticationToken auth0Token = (Auth0AuthenticationToken) authentication;
+        task.setUserId(auth0Token.getName());
         taskService.save(task);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/task/{id}")
@@ -35,33 +42,48 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long id){
+    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
         Task task = taskService.findTaskById(id);
 
-        if(task != null){
+        if (task != null) {
             return ResponseEntity.ok(task);
         }
 
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id,  @RequestBody Task updatedTask){
-
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task updatedTask, Authentication authentication) {
+        Auth0AuthenticationToken auth0Token = (Auth0AuthenticationToken) authentication;
 
         Task task = taskService.findTaskById(id);
-
-        if(task != null) {
-//            task.(updatedTask.getName());
-//            task.setAge(updatedPerson.getAge());
-            taskService.save(task);
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/persons/{id}")
-                    .buildAndExpand(task.getId())
-                    .toUri();
-            return ResponseEntity.created(location).build();
+        if(task != null){
+            if (task.getUserId().equals(auth0Token.getName()) || scopeValidator.hasRequiredScopes(auth0Token, "admin", "write:users")) {
+                task.setStatus(updatedTask.getStatus());
+                taskService.save(task);
+                URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                        .path("/persons/{id}")
+                        .buildAndExpand(task.getId())
+                        .toUri();
+                return ResponseEntity.created(location).build();
+            } else {
+                return ResponseEntity.status(403).build();
+            }
         }
 
+
         return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Task> deleteTask(@PathVariable Long id, Authentication authentication) {
+        Auth0AuthenticationToken auth0Token = (Auth0AuthenticationToken) authentication;
+
+        if (this.taskService.getTaskUserIdById(id).equals(auth0Token.getName()) || scopeValidator.hasRequiredScopes(auth0Token, "admin")){
+            taskService.deleteTaskById(id);
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.status(403).build();
     }
 }

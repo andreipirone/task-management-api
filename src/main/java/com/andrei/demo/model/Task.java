@@ -1,5 +1,6 @@
 package com.andrei.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +14,11 @@ public class Task {
     private String title;
     private String description;
     private String status;
+
+    // New field for relationship
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
 
 
     public int getId() {
@@ -49,6 +55,14 @@ public class Task {
 
     public String getStatus() {
         return status;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public void setStatus(String status) {

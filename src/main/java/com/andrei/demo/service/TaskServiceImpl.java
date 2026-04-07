@@ -42,6 +42,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public String getTaskUserIdById(Long id) {
+        return this.taskRepository.findUserIdById(id);
+    }
+
+    @Override
     public List<Task> findAll() {
         return this.taskRepository.findAll();
     }
