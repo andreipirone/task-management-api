@@ -32,5 +32,5 @@ build/
 ### VS Code ###
 .vscode/
 
-# Ignore frontend environment variables
+# Ignore frontend env variables
 frontend/.env
