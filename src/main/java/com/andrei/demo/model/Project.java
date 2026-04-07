@@ -14,6 +14,7 @@ public class Project {
     private int id;
     private String name;
     private String description;
+    private String status;
 
     // New field for relationship
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -42,6 +43,14 @@ public class Project {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public List<Task> getTasks() {

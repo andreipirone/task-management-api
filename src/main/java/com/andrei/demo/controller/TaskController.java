@@ -62,7 +62,7 @@ public class TaskController {
                 task.setStatus(updatedTask.getStatus());
                 taskService.save(task);
                 URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                        .path("/persons/{id}")
+                        .path("/tasks/{id}")
                         .buildAndExpand(task.getId())
                         .toUri();
                 return ResponseEntity.created(location).build();

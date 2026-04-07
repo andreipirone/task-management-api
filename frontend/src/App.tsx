@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useAuth0 } from '@auth0/auth0-react';
 import Navbar from './Navbar';
 import Tasks from './Tasks';
+import Projects from './Projects';
 import Welcome from './Welcome';
 
 function App() {
@@ -30,6 +31,19 @@ function App() {
                             <>
                                 <Navbar />
                                 <Tasks />
+                            </>
+                        ) : (
+                            <Navigate to="/" />
+                        )
+                    }
+                />
+                <Route
+                    path="/projects"
+                    element={
+                        isAuthenticated ? (
+                            <>
+                                <Navbar />
+                                <Projects />
                             </>
                         ) : (
                             <Navigate to="/" />

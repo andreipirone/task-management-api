@@ -11,8 +11,8 @@ function Navbar() {
     useEffect(() => {
         const checkAdmin = async () => {
             if (isAuthenticated) {
-                const roles = user?.['http://localhost:8080/roles'] || user?.['roles'] || user?.['permissions'] || [];
-                if (roles.includes('admin') || roles.includes('Admin')) {
+                const roles = user?.['permissions'] || [];
+                if (roles.includes('admin')) {
                     setIsAdmin(true);
                     return;
                 }
@@ -23,7 +23,7 @@ function Navbar() {
                     const decodedJson = atob(payloadBase64);
                     const decoded = JSON.parse(decodedJson);
                     const permissions = decoded.permissions || [];
-                    if (permissions.includes('admin') || permissions.includes('Admin')) {
+                    if (permissions.includes('admin')) {
                         setIsAdmin(true);
                     }
                 } catch (e) {

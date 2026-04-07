@@ -3,5 +3,12 @@ export type Task = {
     user_id: string | null;
     title: string;
     description: string;
-    status: 'open' | 'in_progress' | 'closed';
+    status: string;
+};
+
+export type Project = {
+    id: string | undefined;
+    name: string;
+    description: string;
+    status: string;
 };
