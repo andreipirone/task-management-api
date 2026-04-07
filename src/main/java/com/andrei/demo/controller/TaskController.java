@@ -30,7 +30,7 @@ public class TaskController {
     }
 
     @GetMapping("/project/{projectId}")
-    public ResponseEntity<List<Task>> getTasksByProject(@PathVariable Long projectId) {
+    public ResponseEntity<List<Task>> getTasksByProject(@PathVariable Long projectId, Authentication authentication) {
         List<Task> tasks = taskService.findTasksByProjectId(projectId);
         return ResponseEntity.ok(tasks);
     }

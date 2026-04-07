@@ -1,6 +1,5 @@
 package com.andrei.demo.service;
 
-import com.andrei.demo.model.Person;
 import com.andrei.demo.model.Task;
 
 import java.util.List;
