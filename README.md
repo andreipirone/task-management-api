@@ -7,7 +7,6 @@ A full-stack project management and task tracking application built with Spring 
 - **Auth0 Authentication** - Secure OAuth2 authentication with scope-based authorization
 - **Project Management** - Create, read, update, and delete projects with status tracking
 - **Task Management** - Kanban-style task board
-- **User Management** - Manage users and assign tasks
 
 > **Note:** The frontend is still a work in progress. Some features may be incomplete or under active development.
 
