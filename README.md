@@ -81,10 +81,6 @@ Only users with admin roles can access these endpoints.
 
 Regular users can only modify and delete their own tasks. User with admin roles can modify and delete all tasks. 
 
-### Users
-- `GET /users` - Get all users
-- `GET /users/{id}` - Get user by ID
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
